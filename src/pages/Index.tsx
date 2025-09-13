@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { LoginPage } from '@/components/LoginPage';
-import { PricingPage } from '@/components/PricingPage';
 import { Dashboard } from '@/components/Dashboard';
 import { EventsPage } from '@/components/EventsPage';
 import { FansPage } from '@/components/FansPage';
@@ -10,9 +10,10 @@ import { CollaborationPage } from '@/components/CollaborationPage';
 import { Home, Calendar, Users, Music, UserPlus, LogOut, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type Page = 'dashboard' | 'events' | 'fans' | 'catalog' | 'collaboration' | 'pricing';
+type Page = 'dashboard' | 'events' | 'fans' | 'catalog' | 'collaboration';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activePage, setActivePage] = useState<Page>('dashboard');
 
@@ -35,31 +36,13 @@ const Index = () => {
     setActivePage('dashboard');
   };
 
-  const handleSelectPlan = (planId: string) => {
-    console.log('Selected plan:', planId);
-    // Here you would typically integrate with a payment processor
-    // For now, we'll just go back to dashboard
-    setActivePage('dashboard');
-  };
-
-  const handleBackToDashboard = () => {
-    setActivePage('dashboard');
+  const goToPricingPage = () => {
+    navigate('/price');
   };
 
   // Show login page if not logged in
   if (!isLoggedIn) {
     return <LoginPage onLogin={handleLogin} />;
-  }
-
-  // Show pricing page as standalone
-  if (activePage === 'pricing') {
-    return (
-      <PricingPage 
-        onSelectPlan={handleSelectPlan}
-        onBack={handleBackToDashboard}
-        isStandalone={true}
-      />
-    );
   }
 
   const menuItems = [
@@ -68,7 +51,6 @@ const Index = () => {
     { id: 'fans' as Page, label: 'Fans', icon: Users },
     { id: 'catalog' as Page, label: 'Music Catalog', icon: Music },
     { id: 'collaboration' as Page, label: 'Collaboration', icon: UserPlus },
-    { id: 'pricing' as Page, label: 'Pricing', icon: CreditCard },
   ];
 
   const renderPage = () => {
@@ -120,8 +102,16 @@ const Index = () => {
             </SidebarMenu>
           </SidebarContent>
           
-          {/* Logout Button */}
-          <div className="p-2 border-t border-sidebar-border">
+          {/* Pricing and Logout Buttons */}
+          <div className="p-2 border-t border-sidebar-border space-y-2">
+            <Button
+              variant="ghost"
+              onClick={goToPricingPage}
+              className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              View Pricing
+            </Button>
             <Button
               variant="ghost"
               onClick={handleLogout}
@@ -150,15 +140,13 @@ const Index = () => {
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span>Free Plan</span>
               </div>
-              {activePage !== 'pricing' && (
-                <Button 
-                  size="sm" 
-                  className="gradient-primary text-white"
-                  onClick={() => setActivePage('pricing')}
-                >
-                  Upgrade
-                </Button>
-              )}
+              <Button 
+                size="sm" 
+                className="gradient-primary text-white"
+                onClick={goToPricingPage}
+              >
+                Upgrade
+              </Button>
             </div>
           </header>
           

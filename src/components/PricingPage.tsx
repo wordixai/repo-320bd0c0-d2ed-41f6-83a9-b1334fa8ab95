@@ -3,8 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { Check, X, Star, Zap, Crown, Music, Users, Calendar, BarChart3, MessageCircle, Phone, ArrowLeft } from 'lucide-react';
+import { Check, X, Star, Zap, Crown, Music, Users, Calendar, BarChart3, MessageCircle, Phone, ArrowLeft, Home } from 'lucide-react';
 
 interface PricingPageProps {
   onSelectPlan?: (planId: string) => void;
@@ -151,29 +150,34 @@ export function PricingPage({ onSelectPlan, onBack, isStandalone = false }: Pric
 
   return (
     <div className="min-h-screen bg-gradient-secondary">
-      {/* Navigation Bar (only for standalone) */}
-      {isStandalone && (
-        <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border sticky top-0 z-50">
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                  <Music className="h-4 w-4 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold">MusicCRM</h2>
-                </div>
+      {/* Navigation Bar */}
+      <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+                <Music className="h-4 w-4 text-white" />
               </div>
+              <div>
+                <h2 className="text-lg font-semibold">MusicCRM</h2>
+                <p className="text-xs text-muted-foreground">Professional Music Management</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
               {onBack && (
                 <Button variant="ghost" onClick={onBack} className="flex items-center space-x-2">
                   <ArrowLeft className="h-4 w-4" />
                   <span>Back to Dashboard</span>
                 </Button>
               )}
+              <Button variant="outline" onClick={onBack} className="flex items-center space-x-2">
+                <Home className="h-4 w-4" />
+                <span>Go to App</span>
+              </Button>
             </div>
           </div>
-        </nav>
-      )}
+        </div>
+      </nav>
 
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-primary">

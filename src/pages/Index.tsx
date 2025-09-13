@@ -15,7 +15,6 @@ type Page = 'dashboard' | 'events' | 'fans' | 'catalog' | 'collaboration' | 'pri
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activePage, setActivePage] = useState<Page>('dashboard');
-  const [showPricing, setShowPricing] = useState(false);
 
   // Check for existing session on component mount
   useEffect(() => {
@@ -34,14 +33,17 @@ const Index = () => {
     setIsLoggedIn(false);
     localStorage.removeItem('musiccrm_session');
     setActivePage('dashboard');
-    setShowPricing(false);
   };
 
   const handleSelectPlan = (planId: string) => {
     console.log('Selected plan:', planId);
     // Here you would typically integrate with a payment processor
-    // For now, we'll just close the pricing page
-    setShowPricing(false);
+    // For now, we'll just go back to dashboard
+    setActivePage('dashboard');
+  };
+
+  const handleBackToDashboard = () => {
+    setActivePage('dashboard');
   };
 
   // Show login page if not logged in
@@ -49,9 +51,15 @@ const Index = () => {
     return <LoginPage onLogin={handleLogin} />;
   }
 
-  // Show pricing page if requested
-  if (showPricing) {
-    return <PricingPage onSelectPlan={handleSelectPlan} />;
+  // Show pricing page as standalone
+  if (activePage === 'pricing') {
+    return (
+      <PricingPage 
+        onSelectPlan={handleSelectPlan}
+        onBack={handleBackToDashboard}
+        isStandalone={true}
+      />
+    );
   }
 
   const menuItems = [
@@ -60,6 +68,7 @@ const Index = () => {
     { id: 'fans' as Page, label: 'Fans', icon: Users },
     { id: 'catalog' as Page, label: 'Music Catalog', icon: Music },
     { id: 'collaboration' as Page, label: 'Collaboration', icon: UserPlus },
+    { id: 'pricing' as Page, label: 'Pricing', icon: CreditCard },
   ];
 
   const renderPage = () => {
@@ -111,16 +120,8 @@ const Index = () => {
             </SidebarMenu>
           </SidebarContent>
           
-          {/* Pricing and Logout Buttons */}
-          <div className="p-2 border-t border-sidebar-border space-y-2">
-            <Button
-              variant="ghost"
-              onClick={() => setShowPricing(true)}
-              className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
-            >
-              <CreditCard className="h-4 w-4 mr-2" />
-              Upgrade Plan
-            </Button>
+          {/* Logout Button */}
+          <div className="p-2 border-t border-sidebar-border">
             <Button
               variant="ghost"
               onClick={handleLogout}
@@ -149,13 +150,15 @@ const Index = () => {
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span>Free Plan</span>
               </div>
-              <Button 
-                size="sm" 
-                className="gradient-primary text-white"
-                onClick={() => setShowPricing(true)}
-              >
-                Upgrade
-              </Button>
+              {activePage !== 'pricing' && (
+                <Button 
+                  size="sm" 
+                  className="gradient-primary text-white"
+                  onClick={() => setActivePage('pricing')}
+                >
+                  Upgrade
+                </Button>
+              )}
             </div>
           </header>
           

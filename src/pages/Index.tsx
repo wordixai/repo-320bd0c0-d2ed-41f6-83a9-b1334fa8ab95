@@ -1,16 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { LoginPage } from '@/components/LoginPage';
 import { Dashboard } from '@/components/Dashboard';
 import { EventsPage } from '@/components/EventsPage';
 import { FansPage } from '@/components/FansPage';
 import { MusicCatalogPage } from '@/components/MusicCatalogPage';
 import { CollaborationPage } from '@/components/CollaborationPage';
-import { Home, Calendar, Users, Music, UserPlus, Settings, BarChart3 } from 'lucide-react';
+import { Home, Calendar, Users, Music, UserPlus, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type Page = 'dashboard' | 'events' | 'fans' | 'catalog' | 'collaboration';
 
 const Index = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activePage, setActivePage] = useState<Page>('dashboard');
+
+  // Check for existing session on component mount
+  useEffect(() => {
+    const savedSession = localStorage.getItem('musiccrm_session');
+    if (savedSession) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    localStorage.setItem('musiccrm_session', 'true');
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('musiccrm_session');
+    setActivePage('dashboard');
+  };
+
+  // Show login page if not logged in
+  if (!isLoggedIn) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
 
   const menuItems = [
     { id: 'dashboard' as Page, label: 'Dashboard', icon: Home },
@@ -68,6 +95,18 @@ const Index = () => {
               ))}
             </SidebarMenu>
           </SidebarContent>
+          
+          {/* Logout Button */}
+          <div className="p-2 border-t border-sidebar-border">
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </Sidebar>
         
         <SidebarInset className="flex-1">
@@ -79,6 +118,13 @@ const Index = () => {
                 <h1 className="text-lg font-semibold capitalize">
                   {activePage === 'catalog' ? 'Music Catalog' : activePage}
                 </h1>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 ml-auto px-4">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span>Connected</span>
               </div>
             </div>
           </header>

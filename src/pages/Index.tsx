@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { LoginPage } from '@/components/LoginPage';
+import { PricingPage } from '@/components/PricingPage';
 import { Dashboard } from '@/components/Dashboard';
 import { EventsPage } from '@/components/EventsPage';
 import { FansPage } from '@/components/FansPage';
 import { MusicCatalogPage } from '@/components/MusicCatalogPage';
 import { CollaborationPage } from '@/components/CollaborationPage';
-import { Home, Calendar, Users, Music, UserPlus, LogOut } from 'lucide-react';
+import { Home, Calendar, Users, Music, UserPlus, LogOut, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type Page = 'dashboard' | 'events' | 'fans' | 'catalog' | 'collaboration';
+type Page = 'dashboard' | 'events' | 'fans' | 'catalog' | 'collaboration' | 'pricing';
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activePage, setActivePage] = useState<Page>('dashboard');
+  const [showPricing, setShowPricing] = useState(false);
 
   // Check for existing session on component mount
   useEffect(() => {
@@ -32,11 +34,24 @@ const Index = () => {
     setIsLoggedIn(false);
     localStorage.removeItem('musiccrm_session');
     setActivePage('dashboard');
+    setShowPricing(false);
+  };
+
+  const handleSelectPlan = (planId: string) => {
+    console.log('Selected plan:', planId);
+    // Here you would typically integrate with a payment processor
+    // For now, we'll just close the pricing page
+    setShowPricing(false);
   };
 
   // Show login page if not logged in
   if (!isLoggedIn) {
     return <LoginPage onLogin={handleLogin} />;
+  }
+
+  // Show pricing page if requested
+  if (showPricing) {
+    return <PricingPage onSelectPlan={handleSelectPlan} />;
   }
 
   const menuItems = [
@@ -96,8 +111,16 @@ const Index = () => {
             </SidebarMenu>
           </SidebarContent>
           
-          {/* Logout Button */}
-          <div className="p-2 border-t border-sidebar-border">
+          {/* Pricing and Logout Buttons */}
+          <div className="p-2 border-t border-sidebar-border space-y-2">
+            <Button
+              variant="ghost"
+              onClick={() => setShowPricing(true)}
+              className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              Upgrade Plan
+            </Button>
             <Button
               variant="ghost"
               onClick={handleLogout}
@@ -124,8 +147,15 @@ const Index = () => {
             <div className="flex items-center gap-2 ml-auto px-4">
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>Connected</span>
+                <span>Free Plan</span>
               </div>
+              <Button 
+                size="sm" 
+                className="gradient-primary text-white"
+                onClick={() => setShowPricing(true)}
+              >
+                Upgrade
+              </Button>
             </div>
           </header>
           
